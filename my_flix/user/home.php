@@ -25,7 +25,9 @@ if($user == null){
                     Messages Box
                 </div>
                 <div class="bg-white p-2">
-                    Body
+                    <?php 
+                        
+                    ?>
                 </div>
             </div>
         </div>
