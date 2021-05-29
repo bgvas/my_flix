@@ -190,12 +190,26 @@ function GetAllSeries($username){
     
 
     function GetMovieMessagesByUserId($username, $userId) {
+        $dateNow = date("Y-m-d");
         $connect = ConnectToDB($username, '1111');
-        $sqlMessages = "SELECT * FROM schedule_watching_movie WHERE user_id = ".$userId;
+        $sqlMessages = "SELECT movie_id FROM schedule_watching_movie WHERE user_id = ".$userId." AND date = '".$dateNow."'";
         if($messagesResult = mysqli_query($connect, $sqlMessages)){
+            $moviesArray = [];
             while($message = mysqli_fetch_array($messagesResult)){
-
+                $sqlMovie = "SELECT project_id FROM movies WHERE id = ".$message['movie_id'];
+                if($movieResult = mysqli_query($connect, $sqlMovie)){
+                    while($movie = mysqli_fetch_array($movieResult)){
+                        $sqlProject = "SELECT title FROM visual_project WHERE id = ".$movie['project_id'];
+                        if($projectResult = mysqli_query($connect, $sqlProject)){
+                            while($project = mysqli_fetch_array($projectResult)){
+                                $moviesArray [] = $project['title'];
+                            }
+                        }
+                    }
+                }
             }
+            DisconnectFromDB($connect);
+            return $moviesArray;
         }
     }
 
