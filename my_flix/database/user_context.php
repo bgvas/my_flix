@@ -167,9 +167,103 @@ function GetAllSeries($username){
     }
 
 
+    function GetSeriesCommentsBySeriesId($username, $id){
+        $connect = ConnectToDB($username, '1111');
+        $sql = "SELECT comment_id FROM comments_for_series WHERE series_id = ".$id;
+        if($result = mysqli_query($connect, $sql)){
+            $commentsArray = [];
+            while($comment = mysqli_fetch_array($result)){
+                $commentsSql = "SELECT comment, userId FROM comments WHERE id = ".$comment['comment_id'];
+                if($commentsResult = mysqli_query($connect, $commentsSql)){
+                    while($comments = mysqli_fetch_array($commentsResult)){
+                        $comment = new stdClass();
+                        $comment->userId = $comments['userId'];
+                        $comment->comment = $comments['comment'];
+                        $commentsArray[] = $comment;
+                    }
+                }
+            }
+            DisconnectFromDB($connect);
+            return $commentsArray;
+        }
+        
+    }
+
+    function GetEpisodeCommentsByEpisodeId($username, $id){
+        $connect = ConnectToDB($username, '1111');
+        $sql = "SELECT comment_id FROM comments_for_episode_of_series WHERE episode_id = ".$id;
+        if($result = mysqli_query($connect, $sql)){
+            $commentsArray = [];
+            while($comment = mysqli_fetch_array($result)){
+                $commentsSql = "SELECT comment, userId FROM comments WHERE id = ".$comment['comment_id'];
+                if($commentsResult = mysqli_query($connect, $commentsSql)){
+                    while($comments = mysqli_fetch_array($commentsResult)){
+                        $comment = new stdClass();
+                        $comment->userId = $comments['userId'];
+                        $comment->comment = $comments['comment'];
+                        $commentsArray[] = $comment;
+                    }
+                }
+            }
+            DisconnectFromDB($connect);
+            return $commentsArray;
+        }
+        
+    }
+
+    function GetValuationForEpisodeByEpisodeId($username, $episodeId){
+        $connect = ConnectToDB($username, '1111');
+        $sql = "SELECT valuation FROM episodes WHERE id = ".$episodeId;
+        if($result = mysqli_query($connect, $sql)){
+            while($episode = mysqli_fetch_array($result)){
+                return $episode['valuation'];
+            }
+        }
+    }
+
+    function SaveSeriesFeedBack($username, $userId, $comment, $valuation, $seriesId){
+        $connect = ConnectToDB($username, '1111');
+        if($comment != null || $valuation != 0){
+            $sqlComment = "INSERT INTO comments (comment, userId, valuation)value('$comment', $userId, $valuation)";
+            if($resultComment = mysqli_query($connect, $sqlComment)){
+                $sqlCommentId = "SELECT id FROM comments WHERE userId = '$userId' ORDER BY id DESC LIMIT 1";
+                if($commentIdResult = mysqli_query($connect, $sqlCommentId)){
+                    while($commentId = mysqli_fetch_array($commentIdResult)){
+                        $sqlSeriesComment = "INSERT INTO comments_for_series(series_id, comment_id)VALUE(".$seriesId.",".$commentId['id'].")";
+                        if($sqlSeriesCommentResult = mysqli_query($connect, $sqlSeriesComment)){
+                        }
+                    }
+                }
+            }
+            DisconnectFromDB($connect);
+            return false;
+        }
+        
+    }
+
+    function SaveEpisodeFeedBack($username, $userId, $comment, $valuation, $seriesId, $episodeId){
+        $connect = ConnectToDB($username, '1111');
+        if($comment != null || $valuation != 0){
+            $sqlComment = "INSERT INTO comments (comment, userId, valuation)value('$comment', $userId, $valuation)";
+            if($resultComment = mysqli_query($connect, $sqlComment)){
+                $sqlCommentId = "SELECT id FROM comments WHERE userId = '$userId' ORDER BY id DESC LIMIT 1";
+                if($commentIdResult = mysqli_query($connect, $sqlCommentId)){
+                    while($commentId = mysqli_fetch_array($commentIdResult)){
+                        $sqlEpisodeComment = "INSERT INTO comments_for_episode_of_series(series_id, comment_id, episode_id)VALUE(".$seriesId.",".$commentId['id'].",".$episodeId.")";
+                        if($sqlEpisodeCommentResult = mysqli_query($connect, $sqlEpisodeComment)){
+                        }
+                    }
+                }
+            }
+            DisconnectFromDB($connect);
+            return false;
+        } 
+    }
+
+
     function SaveMovieFeedBack($username, $userId, $comment, $valuation, $schedule, $movieId){
         $connect = ConnectToDB($username, '1111');
-        if($comment != null || $valuation != null){
+        if($comment != null || $valuation != 0){
             $sqlComment = "INSERT INTO comments (comment, userId, valuation)value('$comment', $userId, $valuation)";
             if($resultComment = mysqli_query($connect, $sqlComment)){
                 $sqlCommentId = "SELECT id FROM comments WHERE userId = '$userId' ORDER BY id DESC LIMIT 1";
@@ -177,11 +271,16 @@ function GetAllSeries($username){
                     while($commentId = mysqli_fetch_array($commentIdResult)){
                         $sqlMovieComment = "INSERT INTO comments_for_movie(movie_id, comment_id)VALUE(".$movieId.",".$commentId['id'].")";
                         if($sqlMovieCommentResult = mysqli_query($connect, $sqlMovieComment)){
-                            DisconnectFromDB($connect);
-                            return true; 
                         }
                     }
                 }
+            }
+        }
+        if($schedule != null){
+            $sqlSchedule = "INSERT INTO schedule_watching_movie (movie_id, user_id, date) VALUES (".$movieId.",".$userId.",'".date('Y-m-d')."')";
+            if($scheduleResult = mysqli_query($connect, $sqlSchedule)){
+                DisconnectFromDB($connect);
+                return true;
             }
         }
         DisconnectFromDB($connect);
@@ -213,5 +312,55 @@ function GetAllSeries($username){
         }
     }
 
+    function GetMovieParticipantsByMovieId($username, $movieId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlMovieParticipants = "SELECT participant_id FROM `movie-participants` WHERE movie_id = ".$movieId;
+        if($participantResults = mysqli_query($connect, $sqlMovieParticipants)){
+            $participantsArray = [];
+            while($participant = mysqli_fetch_array($participantResults)){
+                $sqlActor = "SELECT full_name FROM participants WHERE id = ".$participant['participant_id'];
+                if($sqlActorResult = mysqli_query($connect, $sqlActor)){
+                    while($actor = mysqli_fetch_array($sqlActorResult)){
+                        $participantsArray[] = $actor['full_name'];
+                    }
+                }
+            }
+            DisconnectFromDB($connect);
+            return $participantsArray;
+        }
+    }
+
+    function GetSeriesParticipantsBySeriesId($username, $seriesId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlSeriesParticipants = "SELECT participant_id FROM participants_of_series WHERE series_id = ".$seriesId;
+        if($participantResults = mysqli_query($connect, $sqlSeriesParticipants)){
+            $participantsArray = [];
+            while($participant = mysqli_fetch_array($participantResults)){
+                $sqlActor = "SELECT full_name FROM participants WHERE id = ".$participant['participant_id'];
+                if($sqlActorResult = mysqli_query($connect, $sqlActor)){
+                    while($actor = mysqli_fetch_array($sqlActorResult)){
+                        $participantsArray[] = $actor['full_name'];
+                    }
+                }
+            }
+            DisconnectFromDB($connect);
+            return $participantsArray;
+        }
+    }
+
+
+    function GetAllEpisodesOfSeriesBySeriesId($username, $seriesId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlEpisodesSeries = "SELECT id FROM episodes WHERE series_id = ".$seriesId;
+        if($episodesSeriesResult = mysqli_query($connect, $sqlEpisodesSeries)){
+            $episodesArray = [];
+            while($episode = mysqli_fetch_array($episodesSeriesResult)){
+                $episodesArray[] = $episode['id'];
+            }
+            DisconnectFromDB($connect);
+            return $episodesArray;
+        }
+
+    }
 
 

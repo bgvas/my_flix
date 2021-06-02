@@ -26,16 +26,20 @@ if($user == null){
                 </div>
                 <div class="bg-white p-2">
                     <?php 
-                        if(count(GetMovieMessagesByUserId($user['username'], $user['id'])) == 0){
-                            print "No reminder for watching movies";
-                            return;
-                        }             
-                        $movies = GetMovieMessagesByUserId($user['username'], $user['id']);
-                        print "<p>Today we remind you to watch that movies:</p>";
-                        foreach($movies as $movie){
-                            print $movie;
+                        if(count($movies = GetMovieMessagesByUserId($user['username'], $user['id'])) == 0){
+                            print "<p style='font-weight: bold'>No reminder for watching movies</p>";
                         }
+                        else {
+                            $movies = GetMovieMessagesByUserId($user['username'], $user['id']);
+                            print "<p class='text-info' style='font-weight: bold'>We remind you to watch that movies, as you asked:</p>";
+                            foreach($movies as $movie){
+                                print "<p> - <span class='h3'>".$movie."  </span><button class='ml-2 btn btn-outline-info'>  watch >>></button></p>";
+                            }
+                        }             
+                        
                     ?>
+                    <hr>
+                    <p style='font-weight: bold'>No reminder for watching series</p>
                 </div>
             </div>
         </div>

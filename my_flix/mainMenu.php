@@ -31,7 +31,7 @@ if($user == null){
                 <div class="col-6" style="text-align: right">
                    <div class="row">
                         <div class="col-9 h1" style="text-align: right">
-                            <a role="button" class="btn btn-outline-light text-white" href="home.php" style="text-decoration: none">
+                            <a role="button" class="btn btn-outline-light text-white" href="../user/home.php" style="text-decoration: none">
                                 Home
                             </a>
                         </div>
