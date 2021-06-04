@@ -15,19 +15,27 @@ if($user == null){
 
 if(isset($_POST['movieId'])){
     if(isset($_POST['comment']) || isset($_POST['valuation']) || isset($_POST['schedule'])){
-        SaveMovieFeedBack($user['username'], $user['id'],$_POST['comment'], $_POST['valuation'], $_POST['schedule'], $_POST['movieId']);
+        $favorite = "0";
+        if(isset($_POST['favorite'])){
+            $favorite = "1";
+        }
+       SaveMovieFeedBack($user['username'], $user['id'],$_POST['comment'], $_POST['valuation'], $_POST['schedule'], $_POST['movieId'], $favorite);
     }
 }
 
 if(isset($_POST['episodeId'])){
-    if((isset($_POST['comment']) || isset($_POST['valuation']))){
-        SaveEpisodeFeedBack($user['username'], $user['id'], $_POST['comment'], $_POST['valuation'],  $_POST['seriesId'], $_POST['episodeId']);
+    if((isset($_POST['comment']) || isset($_POST['valuation'])) || isset($_POST['schedule'])){
+        SaveEpisodeFeedBack($user['username'], $user['id'], $_POST['comment'], $_POST['valuation'],  $_POST['seriesId'], $_POST['episodeId'], $_POST['episodeIndex'], $_POST['schedule']);
     }
 }
 
 if(isset($_POST['seriesId']) && !isset($_POST['episodeId'])){
+    $favorite = "0";
+    if(isset($_POST['favorite'])){
+        $favorite = "1";
+    }
     if(isset($_POST['comment']) || isset($_POST['valuation'])){
-        SaveSeriesFeedBack($user['username'], $user['id'],$_POST['comment'], $_POST['valuation'],  $_POST['seriesId']);
+        SaveSeriesFeedBack($user['username'], $user['id'],$_POST['comment'], $_POST['valuation'],  $_POST['seriesId'], $favorite);
     }
 }
 

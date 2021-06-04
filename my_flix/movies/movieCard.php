@@ -28,7 +28,6 @@ if(!isset($_SESSION['movie'.$_POST['movieId']])) {
 
 
 $movie = unserialize($_SESSION['movie'.$_POST['movieId']]);
-
 ?>
 
 
@@ -63,6 +62,9 @@ $movie = unserialize($_SESSION['movie'.$_POST['movieId']]);
                                         </div>
                                         <div>
                                             <strong>Category: </strong><?php print $movie->categories?>
+                                        </div>
+                                        <div>
+                                            <strong>long: </strong><?php print $movie->long?> minutes
                                         </div>
                                         <div>
                                             <strong>Year of creation: </strong><?php print $movie->year?>
@@ -139,6 +141,11 @@ $movie = unserialize($_SESSION['movie'.$_POST['movieId']]);
                                                         <option class="h3 text-warning" value="4">* * * *</option>
                                                         <option class="h3 text-warning" value="5">* * * * *</option>
                                                     </select>
+                                                </div>
+                                                <div class=" mt-3 p-2 bg-white shadow">
+                                                    <strong>
+                                                        <?php $favoriteMovie = isFavoriteMovie($user, $movie->id) || 0;?>
+                                                        Add to favorites <input type="checkbox" name="favorite" value="<?php print $favoriteMovie?>" <?php $favoriteMovie == 1?print "checked":""?>>
                                                 </div>
                                                 <div class=" mt-3 p-2 bg-white shadow">
                                                     <strong>

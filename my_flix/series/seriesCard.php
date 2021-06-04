@@ -84,7 +84,8 @@ $series = unserialize($_SESSION['series'.$_POST['seriesId']]);
                                                     foreach($episodesArray as $episode){?>
                                                         <div class="col-1"> <!-- display episodes as buttons -->
                                                             <form action="../series/episodeCard.php" method="post">
-                                                                <input type="hidden" name="episodeId" value="<?php print $episode ?>">
+                                                                <input type="hidden" name="episodeId" value="<?php print $episode['id'] ?>">
+                                                                <input type="hidden" name="long" value="<?php print $episode['time_long'] ?>">
                                                                 <input type="hidden" name="episodeIndex" value="<?php print $counter ?>">
                                                                 <input type="hidden" name="seriesId" value="<?php print $series->id ?>">
                                                                 <button class="btn text-primary" style="background-color: inherit; border: 0" type="submit">
@@ -172,6 +173,11 @@ $series = unserialize($_SESSION['series'.$_POST['seriesId']]);
                                                         <option class="h3 text-warning" value="4">* * * *</option>
                                                         <option class="h3 text-warning" value="5">* * * * *</option>
                                                     </select>
+                                                </div>
+                                                <div class=" mt-3 p-2 bg-white shadow">
+                                                    <strong>
+                                                        <?php $favoriteSeries = isFavoriteSeries($user, $series->id) || 0;?>
+                                                        Add to favorites <input type="checkbox" name="favorite" value="<?php print $favoriteSeries?>" <?php $favoriteSeries == 1?print "checked":""?>>
                                                 </div>
                                                 <input type="hidden" name="seriesId" value="<?php print $series->id ?>">
                                                 <button class="mt-3 w-100 btn btn-primary">Save my feedback</button>

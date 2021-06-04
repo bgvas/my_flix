@@ -39,6 +39,7 @@
             while ($row = mysqli_fetch_array($result)) {
                $movie = new stdClass();
                $movie->id = $row['id'];
+               $movie->long = $row['time_long'];
                $project = GetProjectDetailsById($username, $row['project_id']);
                 if ($project != null) {
                     $movie->title = $project->title;
@@ -221,7 +222,7 @@ function GetAllSeries($username){
         }
     }
 
-    function SaveSeriesFeedBack($username, $userId, $comment, $valuation, $seriesId){
+    function SaveSeriesFeedBack($username, $userId, $comment, $valuation, $seriesId, $favorite){
         $connect = ConnectToDB($username, '1111');
         if($comment != null || $valuation != 0){
             $sqlComment = "INSERT INTO comments (comment, userId, valuation)value('$comment', $userId, $valuation)";
@@ -235,13 +236,16 @@ function GetAllSeries($username){
                     }
                 }
             }
-            DisconnectFromDB($connect);
-            return false;
         }
+        $favoriteSql = "INSERT INTO favorite_series (user_id, series_id, favorite)VALUE($userId, $seriesId, $favorite) ON DUPLICATE KEY UPDATE favorite = $favorite";
+        if($favoriteResult = mysqli_query($connect, $favoriteSql)){
+        }
+
+        DisconnectFromDB($connect);
         
     }
 
-    function SaveEpisodeFeedBack($username, $userId, $comment, $valuation, $seriesId, $episodeId){
+    function SaveEpisodeFeedBack($username, $userId, $comment, $valuation, $seriesId, $episodeId, $episodeIndex, $schedule){
         $connect = ConnectToDB($username, '1111');
         if($comment != null || $valuation != 0){
             $sqlComment = "INSERT INTO comments (comment, userId, valuation)value('$comment', $userId, $valuation)";
@@ -255,13 +259,19 @@ function GetAllSeries($username){
                     }
                 }
             }
-            DisconnectFromDB($connect);
-            return false;
-        } 
+        }
+        if($schedule != null){
+            $schedule = date("Y-m-d", strtotime($schedule));
+            $sqlSchedule = "INSERT INTO schedule_watching_series (series_id, episode_index, user_id, date) VALUES (".$seriesId.",".$episodeIndex.",".$userId.",'".$schedule."')";
+            if($scheduleResult = mysqli_query($connect, $sqlSchedule)){
+            }
+        }
+        DisconnectFromDB($connect);
+       
     }
 
 
-    function SaveMovieFeedBack($username, $userId, $comment, $valuation, $schedule, $movieId){
+    function SaveMovieFeedBack($username, $userId, $comment, $valuation, $schedule, $movieId, $favorite){
         $connect = ConnectToDB($username, '1111');
         if($comment != null || $valuation != 0){
             $sqlComment = "INSERT INTO comments (comment, userId, valuation)value('$comment', $userId, $valuation)";
@@ -277,14 +287,16 @@ function GetAllSeries($username){
             }
         }
         if($schedule != null){
-            $sqlSchedule = "INSERT INTO schedule_watching_movie (movie_id, user_id, date) VALUES (".$movieId.",".$userId.",'".date('Y-m-d')."')";
+            $date = date("Y-m-d", strtotime($schedule));
+            $sqlSchedule = "INSERT INTO schedule_watching_movie (movie_id, user_id, date) VALUES (".$movieId.",".$userId.",'".$date."')";
             if($scheduleResult = mysqli_query($connect, $sqlSchedule)){
-                DisconnectFromDB($connect);
-                return true;
             }
         }
+        $favoriteSql = "INSERT INTO favorite_movies (user_id, movie_id, favorite)VALUE($userId, $movieId, $favorite) ON DUPLICATE KEY UPDATE favorite = $favorite";
+        if($favoriteResult = mysqli_query($connect, $favoriteSql)){
+        }
+
         DisconnectFromDB($connect);
-        return false;
     }
     
 
@@ -311,6 +323,36 @@ function GetAllSeries($username){
             return $moviesArray;
         }
     }
+
+    function GetSeriesEpisodeMessagesByUserId($username, $userId) {
+        $dateNow = date("Y-m-d");
+        $connect = ConnectToDB($username, '1111');
+        $sqlMessages = "SELECT series_id, episode_index FROM schedule_watching_series WHERE user_id = ".$userId." AND date = '".$dateNow."'";
+        if($messagesResult = mysqli_query($connect, $sqlMessages)){
+            $episodesArray = [];
+            while($message = mysqli_fetch_array($messagesResult)){
+                $sqlSeries = "SELECT project_id FROM series WHERE id = ".$message['series_id'];
+                if($seriesResult = mysqli_query($connect, $sqlSeries)){
+                    while($series = mysqli_fetch_array($seriesResult)){
+                        $sqlProject = "SELECT title FROM visual_project WHERE id = ".$series['project_id'];
+                        if($projectResult = mysqli_query($connect, $sqlProject)){
+                            while($project = mysqli_fetch_array($projectResult)){
+                                $seriesSchedule = new stdClass();
+                                $seriesSchedule->episode = $message['episode_index'];
+                                $seriesSchedule->title = $project['title'];
+                                $episodesArray [] = $seriesSchedule;
+                            }
+                        }
+                    }
+                }
+            }
+            DisconnectFromDB($connect);
+            return $episodesArray;
+        }
+    }
+
+
+
 
     function GetMovieParticipantsByMovieId($username, $movieId){
         $connect = ConnectToDB($username, '1111');
@@ -351,11 +393,11 @@ function GetAllSeries($username){
 
     function GetAllEpisodesOfSeriesBySeriesId($username, $seriesId){
         $connect = ConnectToDB($username, '1111');
-        $sqlEpisodesSeries = "SELECT id FROM episodes WHERE series_id = ".$seriesId;
+        $sqlEpisodesSeries = "SELECT id, time_long FROM episodes WHERE series_id = ".$seriesId;
         if($episodesSeriesResult = mysqli_query($connect, $sqlEpisodesSeries)){
             $episodesArray = [];
             while($episode = mysqli_fetch_array($episodesSeriesResult)){
-                $episodesArray[] = $episode['id'];
+                $episodesArray[] = $episode;
             }
             DisconnectFromDB($connect);
             return $episodesArray;
@@ -363,4 +405,24 @@ function GetAllSeries($username){
 
     }
 
+
+    function IsFavoriteMovie($user, $movieId){
+        $connect = ConnectToDB($user['username'], '1111');
+        $sqlFavorite = "SELECT favorite FROM favorite_movies WHERE user_id = ".$user['id']." AND movie_id = ".$movieId;
+        if($movieResult = mysqli_query($connect, $sqlFavorite)){
+            while($movie = mysqli_fetch_array($movieResult)){
+                return $movie['favorite'];
+            }
+        }
+    }
+
+    function IsFavoriteSeries($user, $seriesId){
+        $connect = ConnectToDB($user['username'], '1111');
+        $sqlFavorite = "SELECT favorite FROM favorite_series WHERE user_id = ".$user['id']." AND series_id = ".$seriesId;
+        if($seriesResult = mysqli_query($connect, $sqlFavorite)){
+            while($series = mysqli_fetch_array($seriesResult)){
+                return $series['favorite'];
+            }
+        }
+    }
 
