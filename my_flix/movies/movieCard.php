@@ -28,6 +28,7 @@ if(!isset($_SESSION['movie'.$_POST['movieId']])) {
 
 
 $movie = unserialize($_SESSION['movie'.$_POST['movieId']]);
+
 ?>
 
 

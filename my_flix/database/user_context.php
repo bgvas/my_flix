@@ -426,3 +426,126 @@ function GetAllSeries($username){
         }
     }
 
+    function GetAllFavoriteMoviesByUserId($user){
+        $connect = ConnectToDB($user['username'], '1111');
+        $sqlFavorite = "SELECT movie_id FROM favorite_movies WHERE user_id = ".$user['id']." AND favorite = 1";
+        if($movieResult = mysqli_query($connect, $sqlFavorite)){
+            $favoriteMoviesArray = [];
+            while($movie = mysqli_fetch_array($movieResult)){
+                $movieProjectSql = "SELECT project_id FROM movies WHERE id = ".$movie['movie_id'];
+                if($movieProjectResult = mysqli_query($connect, $movieProjectSql)){
+                    while($projectIdResult = mysqli_fetch_array($movieProjectResult)){
+                        $projectSql = "SELECT title FROM visual_project WHERE id = ".$projectIdResult['project_id'];
+                        if($projectResult = mysqli_query($connect, $projectSql)){
+                            while($project = mysqli_fetch_array($projectResult)){
+                                $favoriteMoviesArray[] = $project['title'];
+                            }
+                        }
+                    }
+                }
+            }
+            return $favoriteMoviesArray;
+            DisconnectFromDB($connect);
+        }
+    }
+
+    function GetAllFavoriteSeriesByUserId($user){
+        $connect = ConnectToDB($user['username'], '1111');
+        $sqlFavorite = "SELECT series_id FROM favorite_series WHERE user_id = ".$user['id']." AND favorite = 1";
+        if($seriesResult = mysqli_query($connect, $sqlFavorite)){
+            $favoriteSeriesArray = [];
+            while($series = mysqli_fetch_array($seriesResult)){
+                $seriesProjectSql = "SELECT project_id FROM series WHERE id = ".$series['series_id'];
+                if($seriesProjectResult = mysqli_query($connect, $seriesProjectSql)){
+                    while($projectIdResult = mysqli_fetch_array($seriesProjectResult)){
+                        $projectSql = "SELECT title FROM visual_project WHERE id = ".$projectIdResult['project_id'];
+                        if($projectResult = mysqli_query($connect, $projectSql)){
+                            while($project = mysqli_fetch_array($projectResult)){
+                                $favoriteSeriesArray[] = $project['title'];
+                            }
+                        }
+                    }
+                }
+            }
+            return $favoriteSeriesArray;
+            DisconnectFromDB($connect);
+        }
+    }
+
+    function GetAllMoviesAndSeriesByDate($user, $fromDate, $toDate){
+        $connect = ConnectToDB($user['username'], '1111');
+        $fromDate = "$fromDate"."-01-01"; 
+        $toDate = "$toDate"."-12-31";
+        $connect = ConnectToDB($user['username'], '1111');
+        $sqlSearch = "SELECT id, title FROM visual_project WHERE created_at BETWEEN '$fromDate' AND '$toDate'";
+        if($sqlResult = mysqli_query($connect,$sqlSearch)){
+            $projectsArray = [];
+            while($project = mysqli_fetch_array($sqlResult)){
+                $foundedProject = new stdClass();
+                $foundedProject->title = $project['title'];
+                $foundedProject->movie = GetMovieByProjectId($user['username'], $project['id']);
+                $foundedProject->series = GetSeriesByProjectId($user['username'], $project['id']);
+                $projectsArray[] = $foundedProject;
+            }
+            DisconnectFromDB($connect);
+            return $projectsArray;
+        }
+        
+    } 
+
+    function GetMovieByProjectId($username, $projectId){
+        $connect = ConnectToDB($username, '1111');
+        $sql = "SELECT * FROM movies WHERE project_id = ".$projectId;
+        if($result = mysqli_query($connect, $sql)){
+            $movie = new stdClass();
+            while ($row = mysqli_fetch_array($result)) {
+               $movie->id = $row['id'];
+               $movie->long = $row['time_long'];
+               $project = GetProjectDetailsById($username, $row['project_id']);
+                if ($project != null) {
+                    $movie->title = $project->title;
+                    $movie->year = $project->year;
+                    $movie->description = $project->description;
+                    $movie->valuation = $project->valuation;
+                }
+                $categories = GetCategoriesOfMovieByMovieId($username, $row['id']);
+                if($categories == null) {
+                    $movie->categories = "";
+                }
+                else {
+                    $movie->categories = $categories;
+                }
+            }
+            DisconnectFromDB($connect);
+            return $movie;
+        }
+    }
+
+    function GetSeriesByProjectId($username, $projectId){
+        $connect = ConnectToDB($username, '1111');
+        $sql = "SELECT * FROM series WHERE project_id = ".$projectId;
+        if($result = mysqli_query($connect, $sql)){
+            $series = new stdClass();
+            while ($row = mysqli_fetch_array($result)) {
+                $series->id = $row['id'];
+                $series->seasons = $row['number_of_seasons'];
+                $series->episodes = $row['number_of_episodes'];
+                $project = GetProjectDetailsById($username, $row['project_id']);
+                if ($project != null) {
+                    $series->title = $project->title;
+                    $series->year = $project->year;
+                    $series->description = $project->description;
+                    $series->valuation = $project->valuation;
+                }
+                $categories = GetCategoriesOfSeriesBySeriesId($username, $row['id']);
+                if($categories == null) {
+                    $series->categories = "";
+                }
+                else {
+                    $series->categories = $categories;
+                }
+            }
+            DisconnectFromDB($connect);
+            return $series;
+        }
+    }

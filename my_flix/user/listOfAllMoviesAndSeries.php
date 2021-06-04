@@ -135,12 +135,12 @@ if(isset($_POST['seriesId']) && !isset($_POST['episodeId'])){
                                                 print "<tr class='bg-white' style='width: 100%'>";
                                             }
                                             else print "<tr style='width: 100%'>";
-                                            $_SESSION['series'.$series->id] = serialize($series);
+                                            $_SESSION['series'.$series->id] = serialize($series); //encode selected series object to post it to seriesCard page
                                ?>
                                    <td class="text-center" style="width: 10%"><?php print $counter + 1; ?></td>
                                    <td class="text-center" style="width: 40%">
                                        <form action="../series/seriesCard.php" method="post">
-                                           <?php print "<input name='seriesId' type='hidden' value = ".$series->id.">";?>  <!--decode selected series object to post it to seriesCard page-->
+                                           <?php print "<input name='seriesId' type='hidden' value = ".$series->id.">";?>  
                                            <button class="btn text-primary" style="background-color: inherit; border: 0" type="submit">
                                                <?php print $series->title?>
                                            </button>

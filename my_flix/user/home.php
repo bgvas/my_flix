@@ -65,7 +65,19 @@ if($user == null){
                             My Favorite movies
                         </div>
                         <div class="bg-white p-2">
-                            No movies
+                            <?php 
+                                $favoriteMovies = GetAllFavoriteMoviesByUserId($user);
+                                if(count($favoriteMovies) == 0){
+                                    print "<p style='font-weight: bold'>You don't have a favorite movie</p>";
+                                }
+                                else {
+                                    $counter = 1;
+                                    foreach($favoriteMovies as $movie){
+                                        print "<p class='h3'>".$counter." - ".$movie."</p>";
+                                        $counter++;
+                                    }
+                                }
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -75,7 +87,19 @@ if($user == null){
                             My Favorite Series
                         </div>
                         <div class="bg-white p-2">
-                            No Series
+                            <?php 
+                                $favoriteSeries = GetAllFavoriteSeriesByUserId($user);
+                                if(count($favoriteSeries) == 0){
+                                    print "<p style='font-weight: bold'>You don't have a favorite series</p>";
+                                }
+                                else {
+                                    $counter = 1;
+                                    foreach($favoriteSeries as $series){
+                                        print "<p class='h3'>".$counter." - ".$series."</p>";
+                                        $counter++;
+                                    }
+                                }
+                            ?>
                         </div>
                     </div>
                 </div>
