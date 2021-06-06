@@ -27,9 +27,7 @@ function response(){
     if(url.includes("usercreated")){
         document.getElementById("messages").innerHTML = "<span style='color:Blue'><h5>User created successful. Now Login to insert.</h5></span>";
     }
-    if(url.includes("patientIdDoesNotExist")){
-        document.getElementById("messages").innerHTML = "<span style='color:Red'><h5>There is no patient with this id. Ask your doctor.</h5></span>";
-    }
+   
 
 }
 

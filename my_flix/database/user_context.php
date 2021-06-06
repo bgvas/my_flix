@@ -20,7 +20,7 @@
     function GetUserByUserId($username, $id)
     {
         $connect = ConnectToDB($username, '1111');
-        $sql = "SELECT * FROM users WHERE id = ".$id;
+        $sql = "SELECT username FROM users WHERE id = ".$id;
         if ($result = mysqli_query($connect, $sql)) {
             while ($row = mysqli_fetch_array($result)) {
                 DisconnectFromDB($connect);
@@ -356,7 +356,7 @@ function GetAllSeries($username){
 
     function GetMovieParticipantsByMovieId($username, $movieId){
         $connect = ConnectToDB($username, '1111');
-        $sqlMovieParticipants = "SELECT participant_id FROM `movie-participants` WHERE movie_id = ".$movieId;
+        $sqlMovieParticipants = "SELECT participant_id FROM `participants_of_movie` WHERE movie_id = ".$movieId;
         if($participantResults = mysqli_query($connect, $sqlMovieParticipants)){
             $participantsArray = [];
             while($participant = mysqli_fetch_array($participantResults)){
@@ -476,7 +476,6 @@ function GetAllSeries($username){
         $connect = ConnectToDB($user['username'], '1111');
         $fromDate = "$fromDate"."-01-01"; 
         $toDate = "$toDate"."-12-31";
-        $connect = ConnectToDB($user['username'], '1111');
         $sqlSearch = "SELECT id, title FROM visual_project WHERE created_at BETWEEN '$fromDate' AND '$toDate'";
         if($sqlResult = mysqli_query($connect,$sqlSearch)){
             $projectsArray = [];
@@ -547,5 +546,156 @@ function GetAllSeries($username){
             }
             DisconnectFromDB($connect);
             return $series;
+        }
+    }
+
+    function GetAllMoviesByParticipantName($username, $participant){
+        $connect = ConnectToDB($username, '1111');
+        $sqlSearch = "SELECT id, full_name FROM participants WHERE full_name LIKE '%$participant%' LIMIT 1";
+        if($sqlResult = mysqli_query($connect,$sqlSearch)){
+            $moviesArray = [];
+            while($participant = mysqli_fetch_array($sqlResult)){
+              $sqlMovie = "SELECT movie_id FROM participants_of_movie WHERE participant_id = ".$participant['id'];
+               if($resultMovie = mysqli_query($connect, $sqlMovie)){
+                   while($movie = mysqli_fetch_array($resultMovie)){
+                        $addMovie = new stdClass();
+                        $addMovie->movie = GetMovieByMovieId($username, $movie['movie_id']);
+                        $addMovie->name = $participant['full_name'];
+                        $moviesArray[] = $addMovie;
+                   }
+               }
+            }
+            DisconnectFromDB($connect);
+            return $moviesArray;
+        }
+    }
+
+    function GetAllSeriesByParticipantName($username, $participant){
+        $connect = ConnectToDB($username, '1111');
+        $sqlSearch = "SELECT id, full_name FROM participants WHERE full_name LIKE '%$participant%' LIMIT 1";
+        if($sqlResult = mysqli_query($connect,$sqlSearch)){
+            $seriesArray = [];
+            while($participant = mysqli_fetch_array($sqlResult)){
+              $sqlSeries = "SELECT series_id FROM participants_of_series WHERE participant_id = ".$participant['id'];
+               if($resultSeries = mysqli_query($connect, $sqlSeries)){
+                   while($series = mysqli_fetch_array($resultSeries)){
+                        $addSeries = new stdClass();
+                        $addSeries->series = GetSeriesBySeriesId($username, $series['series_id']);
+                        $addSeries->name = $participant['full_name'];
+                        $seriesArray[] = $addSeries;
+                   }
+               }
+            }
+            DisconnectFromDB($connect);
+            return $seriesArray;
+        }
+    }
+
+    function GetMovieByMovieId($username, $movieId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlSearch = "SELECT * FROM movies WHERE id = ".$movieId;
+        if($sqlResult = mysqli_query($connect, $sqlSearch)){
+            $movie = new stdClass();
+            while($movieResults = mysqli_fetch_array($sqlResult)){
+                $movie->id = $movieId;
+                $movie->long = $movieResults['time_long'];
+                $movie->categories = GetCategoriesOfMovieByMovieId($username, $movieId);
+                $project = GetProjectDetailsById($username, $movieResults['project_id']);
+                $movie->year = $project->year;
+                $movie->description = $project->description;
+                $movie->valuation = $project->valuation;
+                $movie->title = $project->title;
+            }
+
+            DisconnectFromDB($connect);
+            return $movie;
+        }
+    }
+
+    function GetSeriesBySeriesId($username, $seriesId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlSearch = "SELECT * FROM series WHERE id = ".$seriesId;
+        if($sqlResult = mysqli_query($connect, $sqlSearch)){
+            $series = new stdClass();
+            while($seriesResults = mysqli_fetch_array($sqlResult)){
+                $series->id = $seriesId;
+                $series->categories = GetCategoriesOfSeriesBySeriesId($username, $seriesId);
+                $project = GetProjectDetailsById($username, $seriesResults['project_id']);
+                $series->year = $project->year;
+                $series->description = $project->description;
+                $series->valuation = $project->valuation;
+                $series->episodes = $seriesResults['number_of_episodes'];
+                $series->seasons = $seriesResults['number_of_seasons'];
+                $series->title = $project->title;
+            }
+
+            DisconnectFromDB($connect);
+            return $series;
+        }
+    }
+
+
+    function GetParticipantFullNameByParticipantName($username, $participant){
+        $connect = ConnectToDB($username, '1111');
+        $sqlSearch = "SELECT full_name FROM participants WHERE full_name LIKE '%$participant%'";
+        if($sqlResult = mysqli_query($connect,$sqlSearch)){
+            while($participant = mysqli_fetch_array($sqlResult)){
+                DisconnectFromDB($connect);
+                return $participant['full_name'];
+            }
+            
+        }
+    }
+
+    function GetAllCategories($username){
+        $connect = ConnectToDB($username, '1111');
+        $sqlSearch = "SELECT * FROM categories";
+        if($sqlResult = mysqli_query($connect,$sqlSearch)){
+            $categoriesArray = [];
+            while($categoryResult = mysqli_fetch_array($sqlResult)){
+               $category = new stdClass();
+               $category->id = $categoryResult['id'];
+               $category->title = $categoryResult['title'];
+               $categoriesArray[] = $category; 
+            }
+            DisconnectFromDB($connect);
+            return $categoriesArray;
+        }
+    }
+
+    function GetAllMoviesByCategoryId($username, $categoryId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlCategorySearch = "SELECT movie_id FROM category_of_movie WHERE category_id = ".$categoryId;
+        if($sqlCategoryResult = mysqli_query($connect,$sqlCategorySearch)){
+            $moviesArray = [];
+            while($category = mysqli_fetch_array($sqlCategoryResult)){
+                $moviesArray[] = GetMovieByMovieId($username, $category['movie_id']);
+            }
+            DisconnectFromDB($connect);
+            return $moviesArray;
+        }
+    }
+
+    function GetAllSeriesByCategoryId($username, $categoryId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlCategorySearch = "SELECT series_id FROM category_of_series WHERE category_id = ".$categoryId;
+        if($sqlCategoryResult = mysqli_query($connect,$sqlCategorySearch)){
+            $seriesArray = [];
+            while($category = mysqli_fetch_array($sqlCategoryResult)){
+                $seriesArray[] = GetSeriesBySeriesId($username, $category['series_id']);
+            }
+            DisconnectFromDB($connect);
+            return $seriesArray;
+        }
+    }
+
+    function GetCategoryTitleById($username, $categoryId){
+        $connect = ConnectToDB($username, '1111');
+        $sqlCategory = "SELECT title FROM categories WHERE id = ".$categoryId;
+        if($resultCategory = mysqli_query($connect, $sqlCategory)){
+            while($category = mysqli_fetch_array($resultCategory)){
+                DisconnectFromDB($connect);
+                return $category['title'];
+            }
         }
     }

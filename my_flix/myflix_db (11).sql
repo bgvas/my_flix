@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 04 Ιουν 2021 στις 05:55:30
+-- Χρόνος δημιουργίας: 06 Ιουν 2021 στις 20:49:20
 -- Έκδοση διακομιστή: 10.4.19-MariaDB
 -- Έκδοση PHP: 8.0.6
 
@@ -62,13 +62,16 @@ CREATE TABLE `category_of_movie` (
 --
 
 INSERT INTO `category_of_movie` (`movie_id`, `category_id`) VALUES
-(4, 1),
-(4, 2),
-(4, 5),
-(5, 5),
+(5, 1),
+(5, 3),
 (5, 6),
 (6, 1),
-(6, 5);
+(6, 5),
+(7, 1),
+(7, 3),
+(7, 5),
+(17, 2),
+(17, 5);
 
 -- --------------------------------------------------------
 
@@ -86,8 +89,7 @@ CREATE TABLE `category_of_series` (
 --
 
 INSERT INTO `category_of_series` (`series_id`, `category_id`) VALUES
-(1, 4),
-(2, 4);
+(1, 4);
 
 -- --------------------------------------------------------
 
@@ -167,7 +169,8 @@ INSERT INTO `comments` (`id`, `comment`, `userId`, `valuation`) VALUES
 (74, '', 1, 1),
 (75, '', 1, 5),
 (76, '', 1, 5),
-(77, 'sdgfsdgfsdgfsdg', 1, 0);
+(77, 'sdgfsdgfsdgfsdg', 1, 0),
+(78, '', 1, 5);
 
 -- --------------------------------------------------------
 
@@ -193,8 +196,7 @@ INSERT INTO `comments_for_episode_of_series` (`comment_id`, `episode_id`, `serie
 (73, 17, 1),
 (74, 2, 1),
 (76, 15, 1),
-(77, 15, 1),
-(75, 13, 2);
+(77, 15, 1);
 
 --
 -- Δείκτες `comments_for_episode_of_series`
@@ -227,9 +229,6 @@ CREATE TABLE `comments_for_movie` (
 --
 
 INSERT INTO `comments_for_movie` (`movie_id`, `comment_id`) VALUES
-(4, 39),
-(4, 40),
-(4, 41),
 (5, 42),
 (6, 36),
 (6, 37),
@@ -281,14 +280,7 @@ INSERT INTO `comments_for_series` (`series_id`, `comment_id`) VALUES
 (1, 57),
 (1, 61),
 (1, 64),
-(1, 66),
-(2, 58),
-(2, 59),
-(2, 60),
-(2, 62),
-(2, 65),
-(2, 67),
-(2, 68);
+(1, 66);
 
 --
 -- Δείκτες `comments_for_series`
@@ -326,10 +318,6 @@ CREATE TABLE `episodes` (
 INSERT INTO `episodes` (`id`, `series_id`, `valuation`, `time_long`) VALUES
 (1, 1, 0, 150),
 (2, 1, 3, 150),
-(11, 2, 0, 150),
-(12, 2, 0, 150),
-(13, 2, 5, 150),
-(14, 2, 0, 150),
 (15, 1, 5, 150),
 (16, 1, 0, 150),
 (17, 1, 4, 150),
@@ -339,7 +327,8 @@ INSERT INTO `episodes` (`id`, `series_id`, `valuation`, `time_long`) VALUES
 (21, 1, 0, 150),
 (22, 1, 0, 150),
 (23, 1, 5, 150),
-(24, 1, 0, 150);
+(24, 1, 0, 150),
+(25, 1, 0, 60);
 
 --
 -- Δείκτες `episodes`
@@ -370,8 +359,7 @@ CREATE TABLE `favorite_movies` (
 
 INSERT INTO `favorite_movies` (`id`, `movie_id`, `user_id`, `favorite`) VALUES
 (1, 5, 1, 0),
-(3, 4, 1, 1),
-(6, 6, 1, 1);
+(6, 6, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -391,28 +379,7 @@ CREATE TABLE `favorite_series` (
 --
 
 INSERT INTO `favorite_series` (`id`, `series_id`, `user_id`, `favorite`) VALUES
-(1, 1, 1, 1),
-(3, 2, 1, 0);
-
--- --------------------------------------------------------
-
---
--- Δομή πίνακα για τον πίνακα `movie-participants`
---
-
-CREATE TABLE `movie-participants` (
-  `movie_id` int(11) NOT NULL,
-  `participant_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Άδειασμα δεδομένων του πίνακα `movie-participants`
---
-
-INSERT INTO `movie-participants` (`movie_id`, `participant_id`) VALUES
-(4, 1),
-(5, 3),
-(6, 2);
+(9, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -431,9 +398,34 @@ CREATE TABLE `movies` (
 --
 
 INSERT INTO `movies` (`id`, `project_id`, `time_long`) VALUES
-(4, 7, 150),
 (5, 8, 150),
-(6, 9, 150);
+(6, 9, 125),
+(7, 10, 150),
+(14, 14, 120),
+(17, 17, 180);
+
+-- --------------------------------------------------------
+
+--
+-- Δομή πίνακα για τον πίνακα `movies_by_producers`
+--
+
+CREATE TABLE `movies_by_producers` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `movie_id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Άδειασμα δεδομένων του πίνακα `movies_by_producers`
+--
+
+INSERT INTO `movies_by_producers` (`id`, `user_id`, `movie_id`, `project_id`) VALUES
+(2, 13, 5, 8),
+(3, 13, 6, 9),
+(4, 13, 7, 10),
+(8, 13, 17, 17);
 
 -- --------------------------------------------------------
 
@@ -456,7 +448,31 @@ INSERT INTO `participants` (`id`, `full_name`) VALUES
 (3, 'Nicolas Cage'),
 (4, 'Jennifer Aniston'),
 (5, 'Courteney Cox'),
-(6, 'Lisa Kudrow');
+(6, 'Lisa Kudrow'),
+(7, 'Tom Cruise'),
+(8, 'Elijah Wood');
+
+-- --------------------------------------------------------
+
+--
+-- Δομή πίνακα για τον πίνακα `participants_of_movie`
+--
+
+CREATE TABLE `participants_of_movie` (
+  `movie_id` int(11) NOT NULL,
+  `participant_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Άδειασμα δεδομένων του πίνακα `participants_of_movie`
+--
+
+INSERT INTO `participants_of_movie` (`movie_id`, `participant_id`, `role_id`) VALUES
+(5, 3, 1),
+(6, 2, 1),
+(7, 1, 1),
+(17, 8, 1);
 
 -- --------------------------------------------------------
 
@@ -466,17 +482,38 @@ INSERT INTO `participants` (`id`, `full_name`) VALUES
 
 CREATE TABLE `participants_of_series` (
   `series_id` int(11) NOT NULL,
-  `participant_id` int(11) NOT NULL
+  `participant_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Άδειασμα δεδομένων του πίνακα `participants_of_series`
 --
 
-INSERT INTO `participants_of_series` (`series_id`, `participant_id`) VALUES
-(1, 4),
-(1, 5),
-(1, 6);
+INSERT INTO `participants_of_series` (`series_id`, `participant_id`, `role_id`) VALUES
+(1, 4, 1),
+(1, 5, 1),
+(1, 6, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Δομή πίνακα για τον πίνακα `participant_role`
+--
+
+CREATE TABLE `participant_role` (
+  `id` int(11) NOT NULL,
+  `role` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Άδειασμα δεδομένων του πίνακα `participant_role`
+--
+
+INSERT INTO `participant_role` (`id`, `role`) VALUES
+(1, 'actor'),
+(2, 'director'),
+(3, 'technician');
 
 -- --------------------------------------------------------
 
@@ -516,9 +553,6 @@ CREATE TABLE `schedule_watching_movie` (
 --
 
 INSERT INTO `schedule_watching_movie` (`id`, `movie_id`, `user_id`, `date`) VALUES
-(28, 4, 1, '2021-06-01'),
-(27, 4, 1, '2021-06-23'),
-(16, 4, 1, '2021-06-30'),
 (23, 5, 1, '2021-06-30'),
 (25, 6, 1, '2021-06-30');
 
@@ -541,8 +575,7 @@ CREATE TABLE `schedule_watching_series` (
 --
 
 INSERT INTO `schedule_watching_series` (`id`, `series_id`, `user_id`, `date`, `episode_index`) VALUES
-(16, 1, 1, '2021-06-04', 2),
-(17, 2, 1, '2021-06-04', 4);
+(16, 1, 1, '2021-06-04', 2);
 
 -- --------------------------------------------------------
 
@@ -562,8 +595,27 @@ CREATE TABLE `series` (
 --
 
 INSERT INTO `series` (`id`, `project_id`, `number_of_seasons`, `number_of_episodes`) VALUES
-(1, 1, 2, 12),
-(2, 2, 2, 4);
+(1, 1, 3, 13);
+
+-- --------------------------------------------------------
+
+--
+-- Δομή πίνακα για τον πίνακα `series_by_producers`
+--
+
+CREATE TABLE `series_by_producers` (
+  `id` int(11) NOT NULL,
+  `series_id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Άδειασμα δεδομένων του πίνακα `series_by_producers`
+--
+
+INSERT INTO `series_by_producers` (`id`, `series_id`, `project_id`, `user_id`) VALUES
+(1, 1, 1, 13);
 
 -- --------------------------------------------------------
 
@@ -588,7 +640,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `fullname`, `token`, `role_id`, `createdAt`, `updatedAt`) VALUES
-(1, 'bill', 'f6bcfd38791545be871770ef3b087c43fee5a84a2b69f4fe9a147953ff39d7b9b542dbcfbdae3f9b7d080088c676d72c684f8648e5e9d815767c5232884942ca', 'b_gvas@yahoo.gr', 'Vasilis Georgoulas', '5261802d86d81226dd842b427bdbc7f7a8396823852ef3eef67f286a566a0d08eb7c2d7e43a54f6a6b5a413a98b80c0c2d022e08016e19d094f75ce6292a76fe', 3, '2021-05-19 03:54:58', '2021-06-03 11:39:00');
+(1, 'bill', 'f6bcfd38791545be871770ef3b087c43fee5a84a2b69f4fe9a147953ff39d7b9b542dbcfbdae3f9b7d080088c676d72c684f8648e5e9d815767c5232884942ca', 'b_gvas@yahoo.gr', 'Vasilis Georgoulas', '0d8a71dd4a686fd055504fe7189b9bc7436f69161b49e77ab17ea1a35e582a4181c9b8cf520df869dfe42b3c597a4fe74f29004d8c76aed12d0959949625cf2d', 1, '2021-05-19 03:54:58', '2021-06-06 08:44:58'),
+(13, 'netflix', 'f6bcfd38791545be871770ef3b087c43fee5a84a2b69f4fe9a147953ff39d7b9b542dbcfbdae3f9b7d080088c676d72c684f8648e5e9d815767c5232884942ca', 'info@netflix.com', 'Netflix S.A', 'a443e737c278c7ea13370afb8a55197b4de81bd943f31ac979b70dddc4008402a9afda7c3f59f51385ff5195688eab23cb63f671b642f53db94639c6a2df53e9', 2, '2021-06-05 20:36:11', '2021-06-06 15:39:05'),
+(29, 'dimitris', 'f6bcfd38791545be871770ef3b087c43fee5a84a2b69f4fe9a147953ff39d7b9b542dbcfbdae3f9b7d080088c676d72c684f8648e5e9d815767c5232884942ca', 'a@a.a', 'dimitris', '7f6bb015b39f3a108861bab72b06723fc386c1807329f0ae292f1252f62afca93ecd49ee7778fadb679e12d36a1f5346cbc83e70e75f6c8d8692c9e314a02e18', 3, '2021-06-06 08:37:02', '2021-06-06 08:37:59');
 
 -- --------------------------------------------------------
 
@@ -610,10 +664,11 @@ CREATE TABLE `visual_project` (
 
 INSERT INTO `visual_project` (`id`, `title`, `description`, `created_at`, `valuation`) VALUES
 (1, 'Friends', 'Follows the personal and professional lives of six twenty to thirty-something-year-old friends living in Manhattan.', 1994, 4),
-(2, 'Funny Series', 'Funny Series', 1985, 5),
-(7, 'Training Day', 'Ambitious LAPD Officer Jake Hoyt is up for promotion and is assigned to Detective Alonzo Harris, a highly-decorated narcotics officer, for a one-day evaluation', 2001, 0),
 (8, 'Face off', 'To foil a terrorist plot, an FBI agent undergoes facial transplant surgery to assume the identity of the criminal mastermind who murdered his only son, but the criminal wakes up prematurely and seeks revenge.', 1997, 0),
-(9, 'The Irish man', 'Sheeran goes to jail, as do most of his associates, who either die in prison or are murdered before they could even be locked up behind bars. Ultimately, Sheeran is left alone in a rundown ­nursing home and preparing for his own death, as he picks out his own coffin and burial plot, repeatedly visits a priest, and tries to remind people who Hoffa was.', 2019, 3);
+(9, 'The Irish man', 'Sheeran goes to jail, as do most of his associates, who either die in prison or are murdered before they could even be locked up behind bars. Ultimately, Sheeran is left alone in a rundown ­nursing home and preparing for his own death, as he picks out his own coffin and burial plot, repeatedly visits a priest, and tries to remind people who Hoffa was.', 2019, 3),
+(10, 'Training Day', 'A rookie cop spends his first day as a Los Angeles narcotics officer with a rogue detective who isn\'t what he appears to be.', 2001, 0),
+(14, 'The firm', 'A young lawyer joins a prestigious law firm only to discover that it has a sinister dark side.', 2015, 0),
+(17, 'The Lord Of The Rings 1', 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.', 2001, 0);
 
 --
 -- Ευρετήρια για άχρηστους πίνακες
@@ -693,18 +748,20 @@ ALTER TABLE `favorite_series`
   ADD KEY `favorite_series_user_fk` (`user_id`);
 
 --
--- Ευρετήρια για πίνακα `movie-participants`
---
-ALTER TABLE `movie-participants`
-  ADD PRIMARY KEY (`movie_id`,`participant_id`),
-  ADD KEY `participant_movie_participantId_fk` (`participant_id`);
-
---
 -- Ευρετήρια για πίνακα `movies`
 --
 ALTER TABLE `movies`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `movie_project_fk` (`project_id`);
+  ADD UNIQUE KEY `UniqueProjectId` (`project_id`);
+
+--
+-- Ευρετήρια για πίνακα `movies_by_producers`
+--
+ALTER TABLE `movies_by_producers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `movie_producer_user_fk` (`user_id`),
+  ADD KEY `movie_movieId_fk` (`movie_id`),
+  ADD KEY `movie_producer_project_fk` (`project_id`);
 
 --
 -- Ευρετήρια για πίνακα `participants`
@@ -713,11 +770,26 @@ ALTER TABLE `participants`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Ευρετήρια για πίνακα `participants_of_movie`
+--
+ALTER TABLE `participants_of_movie`
+  ADD PRIMARY KEY (`movie_id`,`participant_id`,`role_id`),
+  ADD KEY `participant_movie_participantId_fk` (`participant_id`),
+  ADD KEY `participant_movie_roleId_fk` (`role_id`);
+
+--
 -- Ευρετήρια για πίνακα `participants_of_series`
 --
 ALTER TABLE `participants_of_series`
-  ADD PRIMARY KEY (`series_id`,`participant_id`),
-  ADD KEY `participant_series_participantId_fk` (`participant_id`);
+  ADD PRIMARY KEY (`series_id`,`participant_id`,`role_id`),
+  ADD KEY `participant_series_participantId_fk` (`participant_id`),
+  ADD KEY `participant_series_roleId_fk` (`role_id`);
+
+--
+-- Ευρετήρια για πίνακα `participant_role`
+--
+ALTER TABLE `participant_role`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Ευρετήρια για πίνακα `roles`
@@ -750,6 +822,15 @@ ALTER TABLE `series`
   ADD KEY `series_project_fk` (`project_id`) USING BTREE;
 
 --
+-- Ευρετήρια για πίνακα `series_by_producers`
+--
+ALTER TABLE `series_by_producers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `series_producer_series_fk` (`series_id`),
+  ADD KEY `series_producer_project_fk` (`project_id`),
+  ADD KEY `series_producer_user_fk` (`user_id`);
+
+--
 -- Ευρετήρια για πίνακα `users`
 --
 ALTER TABLE `users`
@@ -760,7 +841,8 @@ ALTER TABLE `users`
 -- Ευρετήρια για πίνακα `visual_project`
 --
 ALTER TABLE `visual_project`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UniqueTitle` (`title`);
 
 --
 -- AUTO_INCREMENT για άχρηστους πίνακες
@@ -776,37 +858,49 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT για πίνακα `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT για πίνακα `episodes`
 --
 ALTER TABLE `episodes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT για πίνακα `favorite_movies`
 --
 ALTER TABLE `favorite_movies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT για πίνακα `favorite_series`
 --
 ALTER TABLE `favorite_series`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT για πίνακα `movies`
 --
 ALTER TABLE `movies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT για πίνακα `movies_by_producers`
+--
+ALTER TABLE `movies_by_producers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT για πίνακα `participants`
 --
 ALTER TABLE `participants`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT για πίνακα `participant_role`
+--
+ALTER TABLE `participant_role`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT για πίνακα `roles`
@@ -818,7 +912,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT για πίνακα `schedule_watching_movie`
 --
 ALTER TABLE `schedule_watching_movie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT για πίνακα `schedule_watching_series`
@@ -833,16 +927,22 @@ ALTER TABLE `series`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT για πίνακα `series_by_producers`
+--
+ALTER TABLE `series_by_producers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT για πίνακα `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT για πίνακα `visual_project`
 --
 ALTER TABLE `visual_project`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Περιορισμοί για άχρηστους πίνακες
@@ -911,23 +1011,33 @@ ALTER TABLE `favorite_series`
   ADD CONSTRAINT `favorite_series_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Περιορισμοί για πίνακα `movie-participants`
---
-ALTER TABLE `movie-participants`
-  ADD CONSTRAINT `participant_movie_movieId_fk` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `participant_movie_participantId_fk` FOREIGN KEY (`participant_id`) REFERENCES `participants` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Περιορισμοί για πίνακα `movies`
 --
 ALTER TABLE `movies`
-  ADD CONSTRAINT `movies_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `visual_project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `movie_project_fk` FOREIGN KEY (`project_id`) REFERENCES `visual_project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Περιορισμοί για πίνακα `movies_by_producers`
+--
+ALTER TABLE `movies_by_producers`
+  ADD CONSTRAINT `movie_movieId_fk` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `movie_producer_project_fk` FOREIGN KEY (`project_id`) REFERENCES `visual_project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `movie_producer_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Περιορισμοί για πίνακα `participants_of_movie`
+--
+ALTER TABLE `participants_of_movie`
+  ADD CONSTRAINT `participant_movie_movieId_fk` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `participant_movie_participantId_fk` FOREIGN KEY (`participant_id`) REFERENCES `participants` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `participant_movie_roleId_fk` FOREIGN KEY (`role_id`) REFERENCES `participant_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Περιορισμοί για πίνακα `participants_of_series`
 --
 ALTER TABLE `participants_of_series`
   ADD CONSTRAINT `participant_series_participantId_fk` FOREIGN KEY (`participant_id`) REFERENCES `participants` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `participant_series_roleId_fk` FOREIGN KEY (`role_id`) REFERENCES `participant_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `participant_series_seriesId_fk` FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -949,6 +1059,14 @@ ALTER TABLE `schedule_watching_series`
 --
 ALTER TABLE `series`
   ADD CONSTRAINT `series_project_fk` FOREIGN KEY (`project_id`) REFERENCES `visual_project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Περιορισμοί για πίνακα `series_by_producers`
+--
+ALTER TABLE `series_by_producers`
+  ADD CONSTRAINT `series_producer_project_fk` FOREIGN KEY (`project_id`) REFERENCES `visual_project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `series_producer_series_fk` FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `series_producer_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Περιορισμοί για πίνακα `users`

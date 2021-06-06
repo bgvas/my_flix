@@ -84,7 +84,7 @@ if(isset($_POST['seriesId']) && !isset($_POST['episodeId'])){
                                    <td class="text-center" style="width: 10%"><?php print $counter + 1; ?></td>
                                    <td class="text-center" style="width: 40%">
                                        <form action="../movies/movieCard.php" method="post">
-                                           <?php print "<input name='movieId' type='hidden' value = ".$movie->id.">";?>  <!--decode selected movie object to post it to movieCard page-->
+                                           <input name='movieId' type='hidden' value = "<?php print $movie->id?>">  <!--decode selected movie object to post it to movieCard page-->
                                            <button class="btn text-primary" style="background-color: inherit; border: 0" type="submit">
                                                <?php print $movie->title?>
                                            </button>
@@ -140,7 +140,7 @@ if(isset($_POST['seriesId']) && !isset($_POST['episodeId'])){
                                    <td class="text-center" style="width: 10%"><?php print $counter + 1; ?></td>
                                    <td class="text-center" style="width: 40%">
                                        <form action="../series/seriesCard.php" method="post">
-                                           <?php print "<input name='seriesId' type='hidden' value = ".$series->id.">";?>  
+                                           <input name='seriesId' type='hidden' value = "<?php print $series->id?>"> 
                                            <button class="btn text-primary" style="background-color: inherit; border: 0" type="submit">
                                                <?php print $series->title?>
                                            </button>

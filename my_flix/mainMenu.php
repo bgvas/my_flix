@@ -31,9 +31,23 @@ if($user == null){
                 <div class="col-6" style="text-align: right">
                    <div class="row">
                         <div class="col-9 h1" style="text-align: right">
-                            <a role="button" class="btn btn-outline-light text-white" href="../user/home.php" style="text-decoration: none">
-                                Home
-                            </a>
+                            <?php
+                                if($user['role_id'] == 1){
+                                    print "<a role='button' class='btn btn-outline-light text-white' href='../admin/home.php' style='text-decoration: none'>
+                                        Home
+                                    </a>";
+                                }
+                                if($user['role_id'] == 2){
+                                    print "<a role='button' class='btn btn-outline-light text-white' href='../producer/home.php' style='text-decoration: none'>
+                                        Home
+                                    </a>";
+                                }
+                                if($user['role_id'] == 3){
+                                    print "<a role='button' class='btn btn-outline-light text-white' href='../user/home.php' style='text-decoration: none'>
+                                        Home
+                                    </a>";
+                                }
+                            ?>
                         </div>
                         <div class="col-3">
                             <?php

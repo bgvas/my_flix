@@ -26,10 +26,10 @@ if($user == null){
                 <a href="../user/searchMoviesAndSeriesByDate.php" role="button" class="btn btn-dark">Search movies and series by year of creation</a>
             </div>
             <div class="col-3 text-center">
-                <a href="" role="button" class="btn btn-dark">Search movies and series by participants</a>
+                <a href="../user/searchMoviesAndSeriesByParticipants.php" role="button" class="btn btn-dark">Search movies and series by participants</a>
             </div>
             <div class="col-3 text-center">
-                <a href="" role="button" class="btn btn-dark">Search movies and series by category</a>
+                <a href="../user/searchMoviesAndSeriesByCategory.php" role="button" class="btn btn-dark">Search movies and series by category</a>
             </div>
         </div>
     </div>

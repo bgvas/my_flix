@@ -19,10 +19,10 @@ $user = getUserByUsernameAndPassword($_POST['username'], $_POST['password']);
 
 switch ($user['role_id']) {
     case 1:
-        header("Location: ../admin/admin-dashboard.php");
+        header("Location: ../admin/home.php");
         break;
     case 2:
-        header("Location: ../producer/producer-dashboard.php");
+        header("Location: ../producer/home.php");
         break;
     case 3:
         header("Location: ../user/home.php");
