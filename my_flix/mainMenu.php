@@ -61,7 +61,13 @@ if($user == null){
                                 print "Admin";
                             }
                             ?>
+                            <div class="col-12 text-right">
+                                <a href="../authentication/login.html" role="button" class="btn btn-outline-danger w-50">Logout</a>
+                            </div>
                         </div>
+                       
+                        
+                        
                    </div>
                 </div>
             </div>

@@ -199,6 +199,60 @@ function AddNewMovie($user, $title, $description, $createdAt, $long, $category, 
     mysqli_query($connect, $sqlParticipantOfMovie); 
 }
 
+function AddNewSeries($user, $title, $description, $createdAt, $category, $participant, $participantRole){
+
+    $connect = ConnectToDB($user['username'], '1111');
+    $projectId = 0;
+    $seriesId = 0;
+    $participantId = 0;
+    
+    $sqlProject = "INSERT INTO visual_project (title, description, created_at) VALUES ('$title', '$description', '$createdAt')";
+    if($resultProject = mysqli_query($connect, $sqlProject)){
+        $sqlProjectId = "SELECT id FROM visual_project WHERE title = '$title'";
+        if($resultProjectId = mysqli_query($connect, $sqlProjectId)){
+            while($newProject = mysqli_fetch_array($resultProjectId)){
+                $projectId = $newProject['id'];
+            }
+        }
+    }
+
+    $sqlSeries = "INSERT INTO series (project_id) VALUES ($projectId)";
+    if($resultSeries = mysqli_query($connect, $sqlSeries)){
+        $sqlNewSeries = "SELECT id FROM series WHERE project_id = ".$projectId;
+        if($resultNewSeries = mysqli_query($connect, $sqlNewSeries)){
+            while($newSeries = mysqli_fetch_array($resultNewSeries)){
+                $seriesId = $newSeries['id'];
+            }
+        }
+    }
+
+    $sqlSeriesOfProducer = "INSERT INTO series_by_producers (series_id, project_id, user_id) VALUES ($seriesId, $projectId, ".$user['id'].")";
+    mysqli_query($connect, $sqlSeriesOfProducer);
+
+    $sqlSeriesCategory = "INSERT INTO category_of_series (series_id, category_id) VALUES ($seriesId, $category)";
+    mysqli_query($connect, $sqlSeriesCategory);
+
+    $participantFromDb = GetParticipantByParticipantName($user, $participant);
+    
+    if($participantFromDb == null){
+        $sqlNewParticipant = "INSERT INTO participants (full_name) VALUES ('$participant')";
+        if(mysqli_query($connect, $sqlNewParticipant)){
+            $sqlNewParticipant = "SELECT id FROM participants ORDER BY id DESC LIMIT 1";
+            if($resultNewParticipant = mysqli_query($connect, $sqlNewParticipant)){
+                while($newParticipant = mysqli_fetch_array($resultNewParticipant)){
+                    $participantId = $newParticipant['id'];
+                }
+            }
+        }
+    }
+    else {
+        $participantId = $participantFromDb['id'];
+    }
+
+    $sqlParticipantOfSeries = "INSERT INTO participants_of_series (series_id, participant_id, role_id) VALUES ($seriesId, $participantId, $participantRole)";
+    mysqli_query($connect, $sqlParticipantOfSeries); 
+}
+
 function GetParticipantByParticipantName($user, $participant){
     $connect = ConnectToDB($user['username'], '1111');
     $sqlSearch = "SELECT * FROM participants WHERE full_name LIKE '%$participant%' LIMIT 1";

@@ -18,6 +18,8 @@ if($user == null){
 
 if(isset($_POST['title']) && isset($_POST['description']) && isset($_POST['createdAt']) && isset($_POST['movieLong']) && isset($_POST['category']) && isset($_POST['participant']) && isset($_POST['participantRole'])){
     AddNewMovie($user, $_POST['title'], $_POST['description'], $_POST['createdAt'], $_POST['movieLong'], $_POST['category'], $_POST['participant'], $_POST['participantRole']);
+    header("Location: ../producer/home.php");
+    exit;
 }
 
 
